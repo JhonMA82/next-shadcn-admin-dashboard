@@ -56,6 +56,64 @@ Specify:
 - Feature columns and actions remain route-private.
 - Transport responses do not flow directly into UI components.
 
+## Worked example
+
+Create customer management (navigation is registered by default):
+
+```bash
+npm run generate:crud -- customers
+```
+
+> Keep the space after `--` so npm forwards the arguments; without it the
+> generator prints usage and creates nothing.
+
+Expected outcome (`customers` → singular `customer` inferred automatically):
+
+```text
+src/app/(main)/dashboard/customers/
+├── _components/
+│   ├── customer-columns.tsx
+│   ├── customer-form.tsx
+│   └── customer-table.tsx
+├── _data/
+│   └── customers.ts
+├── _schemas/
+│   └── customer.ts
+├── [id]/
+│   └── edit/
+│       └── page.tsx
+├── new/
+│   └── page.tsx
+├── loading.tsx
+├── error.tsx
+└── page.tsx
+```
+
+- A `Customers` entry is added to the sidebar under the `Pages` group
+  (`/dashboard/customers`, `Users` icon).
+- `docs/ai/generated-context.md` is regenerated.
+- `_data/customers.ts` is a compile-ready placeholder: replace it with the
+  approved server data boundary; never ship the mock as product data.
+
+## Scenarios
+
+- **Irregular plural.** For `people`, the inferred singular may be wrong; pass
+  `--singular person` to pin the entity name. A mismatch between the supplied
+  route and the inferred plural prints a warning and preserves your route.
+- **Scoped operations.** CRUD is not all-or-nothing: when creation is out of
+  scope, delete `new/`; when editing is out of scope, delete `[id]/edit/`.
+  Keep the scaffold honest instead of shipping dead routes.
+- **Hidden until ready.** `--no-nav` scaffolds the module without sidebar
+  registration.
+- **Placement and label.** `--nav-group Dashboards --nav-icon Building2`
+  `--nav-title "Accounts"` adjusts sidebar registration without edits.
+- **Name collision.** Existing files are preserved unless `--force` is passed.
+- **Batch scaffolding.** Use `--no-context` across consecutive runs, then one
+  `npm run ai:context` at the end.
+- **Wrong generator.** A read-only overview without mutations is a dashboard
+  (`generate:dashboard`); a tool without entity lifecycle is a feature
+  (`generate:feature`).
+
 ## Verification
 
 Include unauthorized operations, invalid input, duplicate/conflict behavior, empty data,

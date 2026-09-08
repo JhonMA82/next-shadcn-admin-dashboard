@@ -49,6 +49,52 @@ Avoid a uniform card grid when information importance differs.
 - Small and large viewports.
 - Light and dark themes.
 
+## Worked example
+
+Create an `operations` overview dashboard (navigation is registered by default):
+
+```bash
+npm run generate:dashboard -- operations
+```
+
+> As with every generator, keep the space after `--` so npm forwards the
+> arguments; without it the generator prints usage and creates nothing.
+
+Expected outcome:
+
+```text
+src/app/(main)/dashboard/operations/
+├── _components/
+│   ├── operations-header.tsx
+│   ├── operations-kpis.tsx
+│   └── operations-activity.tsx
+├── loading.tsx
+├── error.tsx
+└── page.tsx
+```
+
+- An `Operations` entry is added to the sidebar under the `Dashboards` group
+  (`/dashboard/operations`, `LayoutDashboard` icon).
+- `docs/ai/generated-context.md` is regenerated.
+- Placeholder metrics compile but are not product data: replace them with the
+  approved server boundary before shipping.
+
+## Scenarios
+
+- **Executive variant.** `--nav-title "Ops overview" --nav-icon Gauge` keeps the
+  route (`operations`) while presenting the approved label and icon.
+- **Hidden until ready.** `--no-nav` scaffolds the route without sidebar
+  registration, for dashboards behind a feature flag or pending approval.
+- **Seeded narrative.** `--description "Fleet health at a glance."` sets the
+  header copy so the information hierarchy starts from the approved question.
+- **Name collision.** Existing routes are never overwritten unless `--force` is
+  passed explicitly.
+- **Batch scaffolding.** Use `--no-context` for consecutive runs, then a single
+  `npm run ai:context` at the end.
+- **Wrong generator.** A screen that is mostly one table with row actions is a
+  CRUD candidate (`generate:crud`); a bounded tool without overview metrics is a
+  feature (`generate:feature`). Do not force the dashboard shape onto either.
+
 ## Verification
 
 Confirm heading hierarchy, visual priority, responsive order, keyboard access, chart
