@@ -11,7 +11,18 @@
     "check": "biome check",
     "check:fix": "biome check --write",
     "prepare": "husky",
-    "generate:presets": "ts-node -P tsconfig.scripts.json src/scripts/generate-theme-presets.ts"
+    "generate:presets": "ts-node -P tsconfig.scripts.json src/scripts/generate-theme-presets.ts",
+    "generate:project": "ts-node -P tsconfig.scripts.json scripts/create-project.ts",
+    "generate:feature": "ts-node -P tsconfig.scripts.json scripts/create-feature.ts",
+    "generate:crud": "ts-node -P tsconfig.scripts.json scripts/create-crud.ts",
+    "generate:dashboard": "ts-node -P tsconfig.scripts.json scripts/create-dashboard.ts",
+    "ai:context": "ts-node -P tsconfig.scripts.json scripts/generate-ai-context.ts",
+    "ai:context:check": "ts-node -P tsconfig.scripts.json scripts/generate-ai-context.ts --check",
+    "validate:architecture": "ts-node -P tsconfig.scripts.json scripts/validate-architecture.ts",
+    "validate:navigation": "ts-node -P tsconfig.scripts.json scripts/validate-navigation.ts",
+    "phase1:self-test": "ts-node -P tsconfig.scripts.json scripts/self-test.ts",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run check && npm run typecheck && npm run validate:architecture && npm run validate:navigation && npm run ai:context:check && npm run build"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"]

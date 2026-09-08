@@ -1,0 +1,64 @@
+schemaVersion: 1
+
+project:
+  template: studio-admin
+  upstreamVersion: 2.2.0
+  framework: nextjs
+  router: app-router
+  language: typescript
+  packageManager: npm
+  formatting: biome
+  styling: tailwind-css-v4
+  componentLibrary: shadcn-ui
+  componentStyle: radix-nova
+  serverComponentsByDefault: true
+
+paths:
+  routes: src/app
+  dashboardRoutes: src/app/(main)/dashboard
+  routePrivateComponents: src/app/(main)/dashboard/<feature>/_components
+  sharedDashboardComponents: src/app/(main)/dashboard/_components
+  sharedApplicationComponents: src/components
+  uiPrimitives: src/components/ui
+  calendarPrimitives: src/components/calendar
+  hooks: src/hooks
+  utilities: src/lib
+  navigation: src/navigation/sidebar/sidebar-items.ts
+  server: src/server
+  stores: src/stores
+  themePresets: src/styles/presets
+  nextLocalDocs: node_modules/next/dist/docs
+  generatorTemplates: templates
+  repositoryScripts: scripts
+  generatedContext: docs/ai/generated-context.md
+
+protectedPaths:
+  - src/components/ui/**
+  - src/components/calendar/**
+
+excludedReferences:
+  - src/app/(main)/dashboard/(legacy)/**
+
+commands:
+  installPhase1: node apply-phase1.mjs
+  generateProject: npm run generate:project --
+  generateFeature: npm run generate:feature --
+  generateCrud: npm run generate:crud --
+  generateDashboard: npm run generate:dashboard --
+  generateContext: npm run ai:context
+  checkContext: npm run ai:context:check
+  validateArchitecture: npm run validate:architecture
+  validateNavigation: npm run validate:navigation
+  validate: npm run validate
+
+invariants:
+  - page.tsx remains a Server Component by default
+  - interactive behavior is isolated in focused Client Components
+  - route-private code stays with its owning route
+  - shared components require concrete multiple consumers
+  - feature code does not modify protected primitives
+  - feature code does not import another feature's private internals
+  - server and utility layers do not import application routes
+  - semantic theme tokens are preferred
+  - legacy routes are not references for new work
+  - generated AI context remains current
