@@ -21,7 +21,11 @@ export async function ensureRepositoryRoot(root: string): Promise<void> {
 }
 
 export async function readJson<T>(filePath: string): Promise<T> {
-  return JSON.parse(await readFile(filePath, "utf8")) as T;
+  try {
+    return JSON.parse(await readFile(filePath, "utf8")) as T;
+  } catch (error) {
+    throw new Error(`Failed to parse JSON at ${filePath}: ${error instanceof Error ? error.message : error}`);
+  }
 }
 
 export async function writeJson(filePath: string, value: unknown): Promise<void> {

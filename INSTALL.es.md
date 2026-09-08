@@ -110,6 +110,65 @@ npm run generate:crud -- inventory-items --singular inventory-item
 
 Los generadores no sobrescriben archivos salvo que se use `--force`.
 
+### Qué esperar de cada generador
+
+**Feature con navegación:**
+
+```bash
+npm run generate:feature -- reports --nav
+```
+
+Crea `src/app/(main)/dashboard/reports/` con `page.tsx`, `loading.tsx`,
+`error.tsx` y `_components/reports-overview.tsx`; registra `Reports` en el
+sidebar (grupo `Pages`, icono `SquareArrowUpRight`) y regenera
+`docs/ai/generated-context.md`. Sin `--nav`, la ruta se crea pero queda fuera
+de la navegación hasta ser aprobada.
+
+**Dashboard (navegación activada por defecto):**
+
+```bash
+npm run generate:dashboard -- operations
+```
+
+Crea `src/app/(main)/dashboard/operations/` con `page.tsx`, `loading.tsx`,
+`error.tsx` y `_components/operations-{header,kpis,activity}.tsx`; registra
+`Operations` en el grupo `Dashboards` (icono `LayoutDashboard`). Las métricas
+son placeholders: hay que reemplazarlas por el boundary de servidor aprobado.
+Con `--no-nav` la ruta se genera sin registro en el sidebar.
+
+**CRUD (navegación activada por defecto):**
+
+```bash
+npm run generate:crud -- customers
+```
+
+Crea `src/app/(main)/dashboard/customers/` con tabla, formulario, columnas,
+esquema, `_data/customers.ts`, páginas `new/` y `[id]/edit/`, más `loading.tsx`
+y `error.tsx`. El singular (`customer`) se infiere solo; si el plural es
+irregular, fíjalo con `--singular person`. `_data/` es un placeholder
+compilable: reemplazarlo por el boundary de servidor antes de entregar.
+
+### Escenarios comunes
+
+- **El comando solo imprime la ayuda y no crea nada.** Falta el espacio después
+  de `--`: `npm run generate:feature --reports` no reenvía argumentos.
+  La forma correcta es `npm run generate:feature -- reports --nav`.
+- **La ruta ya existe.** El generador se niega a sobrescribir. Usa `--force`
+  solo cuando descartar el scaffold anterior sea intencional.
+- **Generar varias rutas seguidas.** Pasa `--no-context` en cada una y corre
+  `npm run ai:context` una sola vez al final.
+- **CRUD recortado.** CRUD no implica todas las operaciones: si crear está fuera
+  de alcance, elimina `new/`; si editar lo está, elimina `[id]/edit/`.
+- **Dashboard oculto.** `--no-nav` genera la ruta sin sidebar, útil tras un
+  feature flag o pendiente de aprobación.
+- **Proyecto derivado.** `--profile minimal` deja un solo dashboard canónico y
+  resetea el sidebar; `full` (por defecto) conserva todos los ejemplos.
+  `--install` corre `npm install` y `--git-init` reinicia git en el destino.
+- **Destino inválido.** El proyecto derivado debe quedar fuera del boilerplate;
+  si el destino existe, pide `--force` explícito.
+- **Contexto desactualizado.** Tras editar patrones o generar rutas fuera de
+  línea, `npm run ai:context:check` avisa; `npm run ai:context` lo regenera.
+
 ## 7. Contexto y validaciones
 
 Después de cambios estructurales:
