@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { {{PASCAL_SINGULAR}}Form } from "../_components/{{ENTITY_SINGULAR}}-form";
 
 export default function New{{PASCAL_SINGULAR}}Page() {

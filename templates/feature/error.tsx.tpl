@@ -11,7 +11,7 @@ export default function {{PASCAL_NAME}}Error({ error, reset }: {{PASCAL_NAME}}Er
   return (
     <section className="space-y-4" role="alert" aria-labelledby="{{ROUTE_NAME}}-error-title">
       <div className="space-y-1">
-        <h1 id="{{ROUTE_NAME}}-error-title" className="text-2xl font-semibold tracking-tight">
+        <h1 id="{{ROUTE_NAME}}-error-title" className="font-semibold text-2xl tracking-tight">
           Unable to load {{TITLE_NAME}}
         </h1>
         <p className="text-muted-foreground">
