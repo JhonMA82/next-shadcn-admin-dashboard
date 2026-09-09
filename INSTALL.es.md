@@ -53,7 +53,15 @@ npm run validate
 
 ## 5. Crear un proyecto derivado
 
-Con todos los ejemplos:
+El tooling del repositorio corre con **npm** como package manager y **ts-node**
+como runtime de scripts (`ts-node -P tsconfig.scripts.json scripts/*.ts`).
+Antes de generar, instala dependencias en el boilerplate fuente:
+
+```bash
+npm install
+```
+
+Con todos los ejemplos (`full`, por defecto):
 
 ```bash
 npm run generate:project -- inventory-admin
@@ -64,6 +72,17 @@ Base mínima con un solo dashboard canónico:
 ```bash
 npm run generate:project -- inventory-admin --profile minimal
 ```
+
+`minimal` elimina las dashboards demo configuradas **y** las rutas standalone
+`chat` y `mail`; conserva `/dashboard/default`, `auth` y `unauthorized`, y deja
+un sidebar sin grupos vacíos. `full` conserva todas las demos.
+
+El proyecto derivado conserva los generadores de feature, dashboard y CRUD,
+`ai:context` y los validadores, pero **no** conserva `generate:project` ni el
+tooling solo-fuente (`scripts/create-project.ts`, `templates/project/`,
+`scripts/self-test.ts`, `phase1:self-test`): es un producto para evolucionar,
+no otra fábrica de proyectos. Prefiere siempre los generadores antes de crear
+estructuras estándar a mano.
 
 Por defecto se crea como directorio hermano del boilerplate. Puedes indicar otra ruta:
 
@@ -80,9 +99,18 @@ cd ../inventory-admin
 npm install
 ```
 
+(O en un solo paso con `npm run generate:project -- inventory-admin --profile minimal --install`.)
+
 Completa su `PROJECT.md` y ejecuta:
 
 ```bash
+npm run validate
+```
+
+Tras cambios estructurales con los generadores, regenera el contexto y valida:
+
+```bash
+npm run ai:context
 npm run validate
 ```
 

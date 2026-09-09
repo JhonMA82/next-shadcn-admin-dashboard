@@ -1,6 +1,11 @@
 # Next.js Admin Template with TypeScript & Shadcn UI
 
-**Studio Admin** - Includes multiple dashboards, authentication layouts, customizable theme presets, and more.
+**Studio Admin, Engineering Platform-ready fork** — deterministic scaffolding, derived
+project generation, and machine-readable AI context for AI-assisted development.
+
+> Upstream project: [arhamkhnz/next-shadcn-admin-dashboard](https://github.com/arhamkhnz/next-shadcn-admin-dashboard).
+> This fork keeps the upstream visual and technical foundation and adds a thin
+> deterministic scaffolding layer on top. Design credit belongs to the upstream project.
 
 <img src="https://github.com/arhamkhnz/next-shadcn-admin-dashboard/blob/main/media/dashboard.png?version=5" alt="Dashboard Screenshot">
 
@@ -103,9 +108,9 @@ _Deploy your own copy with one click._
 
 ### Run locally
 
-1. **Clone the repository**
+1. **Clone this fork**
    ```bash
-   git clone https://github.com/arhamkhnz/next-shadcn-admin-dashboard.git
+   git clone https://github.com/JhonMA82/next-shadcn-admin-dashboard.git
    ```
    
 2. **Navigate into the project**
@@ -124,6 +129,50 @@ _Deploy your own copy with one click._
    ```
 
 Your app will be running at [http://localhost:3000](http://localhost:3000)
+
+### Create a derived project
+
+This boilerplate generates standalone projects. Repository tooling runs on `npm` + `ts-node`:
+
+```bash
+npm install
+npm run generate:project -- inventory-admin --profile minimal
+```
+
+```bash
+npm run generate:project -- demo-admin --profile full
+```
+
+- `minimal`: a single canonical dashboard plus the auth shell; demo dashboards and
+  standalone chat/mail routes are removed and the sidebar is reset.
+- `full` (default): keeps every demo route.
+
+The derived project is created as a sibling directory. It keeps the feature,
+dashboard, and CRUD generators plus AI context and validators, but it no longer
+contains `generate:project`: a derived project is a product to evolve, not another
+project factory.
+
+### Persistent scaffolding (source and derived)
+
+These commands stay available inside derived projects:
+
+```bash
+npm run generate:feature -- reports
+npm run generate:feature -- reports --nav
+
+npm run generate:dashboard -- operations
+
+npm run generate:crud -- customers
+npm run generate:crud -- inventory-items --singular inventory-item
+```
+
+Prefer these generators over hand-writing standard route structures. After
+structural scaffolding, refresh AI context and validate:
+
+```bash
+npm run ai:context
+npm run validate
+```
 
 ### Formatting and Linting
 
