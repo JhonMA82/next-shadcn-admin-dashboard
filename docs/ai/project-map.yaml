@@ -51,6 +51,83 @@ commands:
   validateNavigation: npm run validate:navigation
   validate: npm run validate
 
+tooling:
+  packageManager: npm
+  scriptRuntime: ts-node
+
+scaffolding:
+  feature:
+    command: npm run generate:feature --
+    arguments:
+      name:
+        required: true
+        format: kebab-case
+      description:
+        required: false
+        type: string
+      nav:
+        required: false
+        type: boolean
+      navGroup:
+        required: false
+        values:
+          - Pages
+          - Dashboards
+      navIcon:
+        required: false
+        type: string
+      navTitle:
+        required: false
+        type: string
+  dashboard:
+    command: npm run generate:dashboard --
+    defaults:
+      navigation: true
+    arguments:
+      name:
+        required: true
+        format: kebab-case
+      description:
+        required: false
+        type: string
+      noNav:
+        required: false
+        type: boolean
+      navIcon:
+        required: false
+        type: string
+      navTitle:
+        required: false
+        type: string
+  crud:
+    command: npm run generate:crud --
+    defaults:
+      navigation: true
+    arguments:
+      plural:
+        required: true
+        format: kebab-case
+      singular:
+        required: false
+        format: kebab-case
+      description:
+        required: false
+        type: string
+      noNav:
+        required: false
+        type: boolean
+      navGroup:
+        required: false
+        values:
+          - Pages
+          - Dashboards
+      navIcon:
+        required: false
+        type: string
+      navTitle:
+        required: false
+        type: string
+
 invariants:
   - page.tsx remains a Server Component by default
   - interactive behavior is isolated in focused Client Components

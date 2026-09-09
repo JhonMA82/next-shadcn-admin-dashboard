@@ -108,6 +108,42 @@ function ensureIconImport(source: string, icon: string): string {
   return source.replace(importPattern, `import {${updatedBody}} from "lucide-react";`);
 }
 
+function appendNavigationGroup(source: string, input: NavigationItemInput): string {
+  const declarationIndex = source.indexOf("export const sidebarItems");
+  if (declarationIndex < 0) {
+    throw new Error("Unable to locate the sidebarItems declaration.");
+  }
+
+  const arrayStart = source.indexOf("[", source.indexOf("=", declarationIndex));
+  if (arrayStart < 0) {
+    throw new Error("Unable to locate the sidebarItems array.");
+  }
+
+  const arrayEnd = findMatchingBracket(source, arrayStart);
+  const groupIds = [...source.matchAll(/^\s*id:\s*(\d+),/gm)].map((match) => Number(match[1]));
+  const nextId = groupIds.length > 0 ? Math.max(...groupIds) + 1 : 1;
+  const safeLabel = input.group.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const snippet = [
+    "",
+    "  {",
+    `    id: ${nextId},`,
+    `    label: "${safeLabel}",`,
+    "    items: [",
+    "      {",
+    `        id: "${input.id}",`,
+    `        title: "${input.title}",`,
+    `        url: "${input.url}",`,
+    `        icon: ${input.icon},`,
+    "      },",
+    "    ],",
+    "  },",
+    "",
+  ].join("\n");
+
+  console.log(`Created navigation group "${input.group}".`);
+  return `${source.slice(0, arrayEnd)}${snippet}${source.slice(arrayEnd)}`;
+}
+
 export async function addNavigationItem(repositoryRoot: string, input: NavigationItemInput): Promise<boolean> {
   const navigationPath = path.join(repositoryRoot, "src", "navigation", "sidebar", "sidebar-items.ts");
 
@@ -127,7 +163,9 @@ export async function addNavigationItem(repositoryRoot: string, input: Navigatio
   const labelMatch = source.match(labelPattern);
 
   if (labelMatch === null) {
-    throw new Error(`Navigation group "${input.group}" was not found.`);
+    source = appendNavigationGroup(source, input);
+    await writeFile(navigationPath, source, "utf8");
+    return true;
   }
 
   const labelIndex = source.indexOf(labelMatch[0]);

@@ -53,12 +53,33 @@ Do not invent route structures repeatedly. Use the repository generators:
 
 ```bash
 npm run generate:feature -- <name>
+npm run generate:feature -- <name> --nav
 npm run generate:dashboard -- <name>
 npm run generate:crud -- <plural-entity>
+npm run generate:crud -- <plural-entity> --singular <singular-entity>
 ```
+
+Navigation options: `--nav` registers a feature in the sidebar; dashboards register
+by default unless `--no-nav` is passed; `--nav-group <Pages|Dashboards>`,
+`--nav-icon <LucideExport>`, and `--nav-title <text>` control placement, icon, and
+label. CRUD infers the singular name; pass `--singular` explicitly when inference
+is insufficient or the domain name should be explicit
+(e.g. `--singular inventory-item`).
+
+Prefer repository generators over manually creating standard feature, dashboard, or
+CRUD structures. Inspect the generated files, then implement approved business
+behavior. Create those structures manually only when the existing generator cannot
+represent the requested shape.
 
 Inspect generated files before implementation. Modify the scaffold to satisfy the approved
 product behavior, not to introduce speculative abstractions.
+
+After structural scaffolding, regenerate AI context and validate:
+
+```bash
+npm run ai:context
+npm run validate
+```
 
 ## Canonical examples
 

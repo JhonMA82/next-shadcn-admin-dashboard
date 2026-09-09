@@ -1,5 +1,6 @@
 import { booleanFlag, parseArgs, printUsage, stringFlag } from "./_lib/cli";
 import { ensureRepositoryRoot } from "./_lib/files";
+import { formatGeneratedFiles } from "./_lib/format";
 import { assertKebabCase, camelCase, pascalCase, pluralize, singularize, titleCase } from "./_lib/naming";
 import { addNavigationItem } from "./_lib/navigation";
 import { renderTemplateTree } from "./_lib/templates";
@@ -72,7 +73,10 @@ export async function createCrud(options: CreateCrudOptions): Promise<string[]> 
       icon: navigationIcon,
       group: navigationGroup,
     });
+    written.push(path.join(repositoryRoot, "src", "navigation", "sidebar", "sidebar-items.ts"));
   }
+
+  formatGeneratedFiles(repositoryRoot, written);
 
   if (refreshContext) {
     await generateAiContext({ repositoryRoot });

@@ -111,11 +111,19 @@ function sourceCommit(repositoryRoot: string): string {
 
 async function applyMinimalProfile(destination: string): Promise<void> {
   const configPath = path.join(destination, "templates", "project", "minimal-profile.json");
-  const config = await readJson<{ removeDashboardDirectories: string[] }>(configPath);
+  const config = await readJson<{
+    removeDashboardDirectories: string[];
+    removeStandaloneDirectories?: string[];
+  }>(configPath);
   const dashboardRoot = path.join(destination, "src", "app", "(main)", "dashboard");
 
   for (const directory of config.removeDashboardDirectories) {
     await rm(path.join(dashboardRoot, directory), { recursive: true, force: true });
+  }
+
+  const standaloneRoot = path.join(destination, "src", "app", "(main)");
+  for (const directory of config.removeStandaloneDirectories ?? []) {
+    await rm(path.join(standaloneRoot, directory), { recursive: true, force: true });
   }
 
   const sidebarTemplate = await readFile(
@@ -130,6 +138,47 @@ async function applyMinimalProfile(destination: string): Promise<void> {
     "utf8",
   );
   await writeFile(path.join(destination, "docs", "ai", "canonical-examples.yaml"), canonicalTemplate, "utf8");
+}
+
+const DERIVED_SOURCE_ONLY_FILES = [
+  "scripts/create-project.ts",
+  "scripts/self-test.ts",
+  "apply-phase1.mjs",
+  "package-scripts.phase1.json",
+  "MANIFEST.md",
+  "PROJECT.template.md",
+  "INSTALL.es.md",
+];
+
+async function cleanupDerivedProject(repositoryRoot: string, destination: string): Promise<void> {
+  for (const relative of DERIVED_SOURCE_ONLY_FILES) {
+    await rm(path.join(destination, relative), { recursive: true, force: true });
+  }
+  await rm(path.join(destination, "templates", "project"), { recursive: true, force: true });
+
+  const packagePath = path.join(destination, "package.json");
+  const packageJson = await readJson<PackageJson>(packagePath);
+  const scripts = packageJson.scripts as Record<string, string> | undefined;
+  if (scripts) {
+    delete scripts["generate:project"];
+    delete scripts["phase1:self-test"];
+  }
+  await writeJson(packagePath, packageJson);
+  // writeJson expands short arrays while biome collapses them. Format the derived
+  // manifest with the source toolchain so `npm run check` stays green out of the box.
+  runCommand("npx", ["biome", "check", "--write", packagePath], repositoryRoot, "biome format derived package.json");
+
+  const projectMapPath = path.join(destination, "docs", "ai", "project-map.yaml");
+  if (await pathExists(projectMapPath)) {
+    const content = await readFile(projectMapPath, "utf8");
+    const stripped = content
+      .split("\n")
+      .filter((line) => !line.trimStart().startsWith("generateProject:"))
+      .join("\n");
+    await writeFile(projectMapPath, stripped, "utf8");
+  }
+
+  await generateAiContext({ repositoryRoot: destination });
 }
 
 function runCommand(command: string, args: string[], cwd: string, label: string): void {
@@ -194,6 +243,8 @@ export async function createProject(options: CreateProjectOptions): Promise<stri
   }
 
   await generateAiContext({ repositoryRoot: destination });
+
+  await cleanupDerivedProject(repositoryRoot, destination);
 
   if (installDependencies) {
     runCommand("npm", ["install"], destination, "npm install");
